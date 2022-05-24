@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 intents = disnake.Intents.default()
 intents.message_content = True
-bot = commands.InteractionBot(intents=intents, test_guilds=[744333418724065370])
+bot = commands.InteractionBot(intents=intents)
 
 analyzer = log_analyzer.LogAnalyzer(bot)
 
