@@ -24,12 +24,12 @@ async def context_menu_analyze(inter):
     channel = await bot.fetch_channel(target.channel.id)
     message = await channel.fetch_message(target.id)
 
-    output_embed, action_row = await analyzer.parse_message(message)
+    try:
+        output_embed, action_row = await analyzer.parse_message(message)
+    except TypeError:
+        return await inter.response.send_message("Couldn't find anything to analyze")
 
-    if output_embed is not None:
-        await inter.response.send_message(embed=output_embed, components=action_row)
-    else:
-        await inter.response.send_message("Couldn't find anything to analyze")
+    await inter.response.send_message(embed=output_embed, components=action_row)
 
 
 @bot.slash_command(description="Analyzes Logs from OBS (does not work on SLD)")
