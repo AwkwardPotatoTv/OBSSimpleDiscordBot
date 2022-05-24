@@ -39,13 +39,32 @@ async def analyze_log(inter, link: str = None, attachment: disnake.Attachment = 
     elif attachment is not None:
         await analyzer.add_candidate(attachment)
     else:
-        return await inter.response.send_message("Please attach some kind of log", hidden=True)
+        return await inter.response.send_message("Please attach some kind of log")
 
-    output_embed, action_row = await analyzer.analyze_candidates()
-    if output_embed is not None:
-        await inter.response.send_message(embed=output_embed, components=action_row)
-    else:
-        await inter.response.send_message("Couldn't find anything to analyze")
+    try:
+        output_embed, action_row = await analyzer.analyze_candidates()
+    except TypeError:
+        return await inter.response.send_message('Failed to analyze log')
 
-logging.info("--- Started Bot ---")
+    await inter.response.send_message(embed=output_embed, components=action_row)
+
+
+# Automatically scans all in-bound messages for an OBD log to analyze it, enabled at container start-up
+scan_messages = os.environ['SCAN-MSG']
+if scan_messages:
+    logger.info("[Enabled] - Scanning messages for OBS Logs")
+
+    @bot.event
+    async def on_message(message):
+        # Returns if the analyzer could not find anything
+        try:
+            embed, action_row = await analyzer.parse_message(message)
+        except TypeError:
+            return
+
+        await message.reply(embed=embed, components=action_row)
+else:
+    logger.info('[Disabled] - Log Analysis must be triggered manually')
+
+logger.info("--- Started Bot ---")
 bot.run(TOKEN)

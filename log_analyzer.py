@@ -4,6 +4,7 @@ from asyncio import TimeoutError
 from urllib.parse import parse_qs, urlparse, quote_plus as urlencode
 
 import aiohttp
+import disnake
 from aiohttp import ClientResponseError
 from disnake import Message, Embed, Colour
 from disnake.enums import ButtonStyle
@@ -73,12 +74,16 @@ class LogAnalyzer:
 
         if len(self.log_candidates) > 3:
             logger.debug('Too many log url candidates, limiting to first 3')
-            log_candidates = self.log_candidates[:3]
+            self.log_candidates = self.log_candidates[:3]
 
         return await self.analyze_candidates()
 
     async def add_candidate(self, candidate):
-        self.log_candidates.append(candidate)
+        if isinstance(candidate, disnake.Attachment):
+            logger.info(candidate.url)
+            self.log_candidates.append(candidate.url)
+        else:
+            self.log_candidates.append(candidate)
 
     async def analyze_candidates(self):
         for log_url in self.log_candidates:
@@ -135,13 +140,13 @@ class LogAnalyzer:
                 f'*Log contains debug messages (browser/ftl/etc), '
                 f'for a filtered version [click here]({clean_url})*\n'
             )
-            
+
         # Clear log candidates
         self.log_candidates = []
-        
+
         row = ActionRow()
         row.add_button(style=ButtonStyle.link, label='Solutions / Full Analysis', url=anal_url)
-        return embed
+        return embed, row
 
     async def _fetch_log_analysis(self, url):
         async with aiohttp.ClientSession() as session:
