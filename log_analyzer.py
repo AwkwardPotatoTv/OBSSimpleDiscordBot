@@ -135,7 +135,10 @@ class LogAnalyzer:
                 f'*Log contains debug messages (browser/ftl/etc), '
                 f'for a filtered version [click here]({clean_url})*\n'
             )
-
+            
+        # Clear log candidates
+        self.log_candidates = []
+        
         row = ActionRow()
         row.add_button(style=ButtonStyle.link, label='Solutions / Full Analysis', url=anal_url)
         return embed
