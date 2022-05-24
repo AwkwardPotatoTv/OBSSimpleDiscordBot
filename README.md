@@ -4,8 +4,10 @@ Simple log analyzer for OBS logs, extracted from the [OBS Bot](https://github.co
 
 Analysis isn't automatic by default, trigger with the slash commands or context menu
 
-Usage: 
+# Usage: 
+
 right click > apps > analyze obs log 
+
 /analyze_log [link] [file] 
 
 Optionally with a start flag, the bot can automatically scan new messages for logs
