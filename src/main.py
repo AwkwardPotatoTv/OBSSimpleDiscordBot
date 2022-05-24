@@ -49,9 +49,9 @@ async def analyze_log(inter, link: str = None, attachment: disnake.Attachment = 
     await inter.response.send_message(embed=output_embed, components=action_row)
 
 
-# Automatically scans all in-bound messages for an OBD log to analyze it, enabled at container start-up
-scan_messages = os.environ['SCAN-MSG']
-if scan_messages:
+# Automatically scans all in-bound messages for an OBS log to analyze it, enabled at container start-up
+scan_messages = os.getenv('SCAN-MSG', False)
+if scan_messages is True:
     logger.info("[Enabled] - Scanning messages for OBS Logs")
 
     @bot.event
