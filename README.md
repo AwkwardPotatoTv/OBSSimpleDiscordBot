@@ -2,6 +2,8 @@
 
 OBS Log Anaylzer using slash commands and context menues
 
+Analysis isn't automate, trigger with the slash commands or context menu 
+
 # Installation
 1. `pip install -r requirments.txt`
 2. Go to https://discord.com/developers/applications
