@@ -1,17 +1,19 @@
 import logging
+import os
 
 import disnake
 from disnake.ext import commands
 
 import log_analyzer
 
-TOKEN = '<YOUR TOKEN>'
+TOKEN = os.environ['TOKEN']
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 intents = disnake.Intents.default()
 intents.message_content = True
-bot = commands.InteractionBot(intents=intents)
+bot = commands.InteractionBot(intents=intents, test_guilds=[744333418724065370])
 
 analyzer = log_analyzer.LogAnalyzer(bot)
 
@@ -22,10 +24,10 @@ async def context_menu_analyze(inter):
     channel = await bot.fetch_channel(target.channel.id)
     message = await channel.fetch_message(target.id)
 
-    output_embed = await analyzer.parse_message(message)
+    output_embed, action_row = await analyzer.parse_message(message)
 
     if output_embed is not None:
-        await inter.response.send_message(embed=output_embed)
+        await inter.response.send_message(embed=output_embed, components=action_row)
     else:
         await inter.response.send_message("Couldn't find anything to analyze")
 
@@ -39,11 +41,11 @@ async def analyze_log(inter, link: str = None, attachment: disnake.Attachment = 
     else:
         return await inter.response.send_message("Please attach some kind of log", hidden=True)
 
-    output_embed = await analyzer.analyze_candidates()
+    output_embed, action_row = await analyzer.analyze_candidates()
     if output_embed is not None:
-        await inter.response.send_message(embed=output_embed)
+        await inter.response.send_message(embed=output_embed, components=action_row)
     else:
         await inter.response.send_message("Couldn't find anything to analyze")
 
-print("Started Bot")
+logging.info("--- Started Bot ---")
 bot.run(TOKEN)
